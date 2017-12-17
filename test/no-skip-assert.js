@@ -8,8 +8,9 @@ const ruleTester = avaRuleTester(test, {
 	}
 });
 
-const errors = [{ruleId: 'no-skip-assert'}];
+const ruleId = 'no-skip-assert';
 const header = `const test = require('ava');\n`;
+const message = 'No assertions should be skipped.';
 
 ruleTester.run('no-skip-assert', rule, {
 	valid: [
@@ -22,15 +23,36 @@ ruleTester.run('no-skip-assert', rule, {
 	invalid: [
 		{
 			code: header + 'test(t => { t.skip.is(1, 1); });',
-			errors
+			output: header + 'test(t => { t.is(1, 1); });',
+			errors: [{
+				ruleId,
+				message,
+				type: 'MemberExpression',
+				line: 2,
+				column: 13
+			}]
 		},
 		{
 			code: header + 'test.cb(t => { t.skip.is(1, 1); t.end(); });',
-			errors
+			output: header + 'test.cb(t => { t.is(1, 1); t.end(); });',
+			errors: [{
+				ruleId,
+				message,
+				type: 'MemberExpression',
+				line: 2,
+				column: 16
+			}]
 		},
 		{
 			code: header + 'test.skip(t => { t.skip.is(1, 1); });',
-			errors
+			output: header + 'test.skip(t => { t.is(1, 1); });',
+			errors: [{
+				ruleId,
+				message,
+				type: 'MemberExpression',
+				line: 2,
+				column: 18
+			}]
 		}
 	]
 });
